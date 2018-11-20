@@ -1,14 +1,29 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { Switch, Route, withRouter } from 'react-router-dom';
 import HomeRoute from './HomeRoute';
+import PrivateRoute from './PrivateRoute';
 import UserRoute from './UserRoute';
-import './style.scss';
+import './style/style.scss';
 
-const Main = () => (
-  <Switch>
-    <Route exact path="/" component={HomeRoute} />
-    <Route exact path="/user" component={UserRoute} />
-  </Switch>
-);
+class Main extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
 
-export default Main;
+  render() {
+    return (
+      <Switch>
+        <Route exact path="/" component={HomeRoute} />
+        <PrivateRoute path="/user" component={UserRoute} auth={this.props.auth} />
+      </Switch>
+    );
+  }
+}
+
+const mapStateToProps = state => ({
+  auth: state.auth,
+});
+
+export default withRouter(connect(mapStateToProps)(Main));

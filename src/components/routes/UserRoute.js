@@ -1,6 +1,6 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
-// import Home from '../organismes/Home/Home';
+// import User from '../organismes/Home/Home';
 
 const User = () => (
   <div>
@@ -10,7 +10,7 @@ const User = () => (
 
 const UserRoute = () => (
   <Switch>
-    <Route exact path="/" component={User} />
+    <Route path="/" component={User} />
   </Switch>
 );
 

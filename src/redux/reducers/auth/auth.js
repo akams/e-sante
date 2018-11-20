@@ -3,7 +3,7 @@ export const SIGN_IN = 'SIGN_IN';
 
 const initialState = {
   // auth: {},
-  isAuthenticating: false,
+  isAuthenticated: false,
 };
 
 export default (state = initialState, action) => {
@@ -12,7 +12,7 @@ export default (state = initialState, action) => {
       console.warn('signin user from signIn: ', action.user);
       return {
         ...state,
-        isAuthenticating: true,
+        isAuthenticated: true,
         token: action.user.token,
         payload: decodeJwt(action.user.token),
       };

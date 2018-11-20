@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom';
 
 import { renderModal } from './Modal';
 import { createInitFormData } from '../../../redux/form/helpers';
-import { myStore } from '../../../../src/App';
 import ENV from '../../../constants/environment/environment';
 import { dispatchSignInUser } from '../../../redux/action/auth';
 
@@ -41,8 +40,14 @@ class Header extends React.Component {
   async onValidate(data) {
     requestLogin(formToAPi(data))
       .then(({ data }) => {
-        console.log({ data });
         this.props.dispatchSignInUserFunction(data);
+        this.setState({
+          modal: false,
+        });
+        return this.props.history.push({
+          pathname: '/user',
+          state: {},
+        });
       })
       .catch(error => {
         console.log({ error });
@@ -62,7 +67,7 @@ class Header extends React.Component {
   }
 
   render() {
-    console.log('props', this.props);
+    const { auth } = this.props;
     return (
       <div>
         <Navbar color="light" light expand="md">
@@ -75,9 +80,15 @@ class Header extends React.Component {
                   <Link to="/info">Info pratique</Link>
                 </div>
               </NavItem>
-              <Button outline color="primary" onClick={this.toggleModal}>
-                Connexion
-              </Button>
+              {!auth.isAuthenticated ? (
+                <Button outline color="primary" onClick={this.toggleModal}>
+                  Connexion
+                </Button>
+              ) : (
+                <Button outline color="primary" onClick={this.toggleModal}>
+                  Déconnexion
+                </Button>
+              )}
             </Nav>
           </Collapse>
         </Navbar>
@@ -92,7 +103,7 @@ const mapDispatchToProps = {
 };
 
 const mapStateToProps = state => ({
-  dispatch: myStore.dispatch,
+  auth: state.auth,
 });
 
 export default connect(
