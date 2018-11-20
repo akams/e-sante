@@ -1,11 +1,30 @@
 import React from 'react';
+import axios from 'axios';
+import { connect } from 'react-redux';
+import { reduxForm } from 'redux-form';
 import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, Button } from 'reactstrap';
-
 import { Link } from 'react-router-dom';
 
 import { renderModal } from './Modal';
+import { createInitFormData } from '../../../redux/form/helpers';
+import { myStore } from '../../../../src/App';
+import ENV from '../../../constants/environment/environment';
+import { dispatchSetUsers } from '../../../redux/action/user';
 
 import './style.scss';
+
+const formName = 'header';
+const RESOURCE = '/users';
+export const initFormData = createInitFormData(formName);
+
+const requestLogin = payload => axios.post(ENV.apiUrl + `${RESOURCE}/login`, payload);
+
+const formToAPi = data => {
+  return {
+    email: data.username,
+    password: data.password,
+  };
+};
 
 class Header extends React.Component {
   constructor(props) {
@@ -16,6 +35,18 @@ class Header extends React.Component {
     };
     this.toggle = this.toggle.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
+    this.onValidate = this.onValidate.bind(this);
+  }
+
+  async onValidate(data) {
+    requestLogin(formToAPi(data))
+      .then(({ data }) => {
+        console.log({ data });
+        this.props.dispatchSetUsersFunction(data);
+      })
+      .catch(error => {
+        console.log({ error });
+      });
   }
 
   toggle() {
@@ -49,10 +80,25 @@ class Header extends React.Component {
             </Nav>
           </Collapse>
         </Navbar>
-        {renderModal(this.state.modal, this.toggleModal)}
+        {renderModal(this.state.modal, this.toggleModal, this.props.handleSubmit, this.onValidate)}
       </div>
     );
   }
 }
 
-export default Header;
+const mapDispatchToProps = {
+  dispatchSetUsersFunction: user => dispatchSetUsers(user),
+};
+
+const mapStateToProps = state => ({
+  dispatch: myStore.dispatch,
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(
+  reduxForm({
+    form: formName,
+  })(Header)
+);

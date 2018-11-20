@@ -37,13 +37,13 @@
     "lint-staged": "^7.3.0",
     "node-sass": "^4.9.3",
     "prettier": "^1.14.3",
-    "pretty-quick": "^1.7.0",
+    "pretty-quick": "^1.8.0",
     "redux-devtools-extension": "^2.13.5",
     "remote-redux-devtools": "^0.5.13",
     "remote-redux-devtools-on-debugger": "^0.8.3"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "REACT_APP_DEVTOOLS=true REACT_APP_SHOW_DEVTOOLS=true react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",

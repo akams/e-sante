@@ -10,7 +10,17 @@ import Header from './components/molecules/Header/Header';
 import Main from './components/routes/Main';
 import rootReducer from './redux/reducers';
 
-export const myStore = createStore(rootReducer, composeWithDevTools(applyMiddleware(thunk)));
+console.log('process.env', process.env);
+
+const REACT_APP_DEVTOOLS = process.env.REACT_APP_DEVTOOLS
+  ? JSON.parse(process.env.REACT_APP_DEVTOOLS)
+  : false;
+
+const middleware = REACT_APP_DEVTOOLS
+  ? composeWithDevTools(applyMiddleware(thunk))
+  : applyMiddleware(thunk);
+
+export const myStore = createStore(rootReducer, middleware);
 
 class App extends Component {
   state = {};
@@ -26,10 +36,10 @@ class App extends Component {
   }
 }
 
-// App
 const ReduxApp = () => (
   <Provider store={myStore}>
     <App />
   </Provider>
 );
+
 export default ReduxApp;
