@@ -4,41 +4,46 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { Container } from 'reactstrap';
+import { routerMiddleware, ConnectedRouter } from 'connected-react-router';
+import { createBrowserHistory } from 'history';
 
-import './App.css';
 import Header from './components/molecules/Header/Header';
 import Main from './components/routes/Main';
 import rootReducer from './redux/reducers';
 
-console.log('process.env', process.env);
+import './App.css';
 
 const REACT_APP_DEVTOOLS = process.env.REACT_APP_DEVTOOLS
   ? JSON.parse(process.env.REACT_APP_DEVTOOLS)
   : false;
 
-const middleware = REACT_APP_DEVTOOLS
-  ? composeWithDevTools(applyMiddleware(thunk))
-  : applyMiddleware(thunk);
+const history = createBrowserHistory();
 
-export const myStore = createStore(rootReducer, middleware);
+const middleware = REACT_APP_DEVTOOLS
+  ? composeWithDevTools(applyMiddleware(thunk, routerMiddleware(history)))
+  : applyMiddleware(thunk, routerMiddleware(history));
+
+export const myStore = createStore(rootReducer(history), middleware);
 
 class App extends Component {
   state = {};
   render() {
     return (
-      <div className="App">
-        <Container>
-          <Header />
-          <Main />
-        </Container>
-      </div>
+      <ConnectedRouter history={this.props.history}>
+        <div className="App">
+          <Container>
+            <Header {...this.props} />
+            <Main {...this.props} />
+          </Container>
+        </div>
+      </ConnectedRouter>
     );
   }
 }
 
 const ReduxApp = () => (
   <Provider store={myStore}>
-    <App />
+    <App history={history} />
   </Provider>
 );
 

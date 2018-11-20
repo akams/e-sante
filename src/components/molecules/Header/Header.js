@@ -9,7 +9,7 @@ import { renderModal } from './Modal';
 import { createInitFormData } from '../../../redux/form/helpers';
 import { myStore } from '../../../../src/App';
 import ENV from '../../../constants/environment/environment';
-import { dispatchSetUsers } from '../../../redux/action/user';
+import { dispatchSignInUser } from '../../../redux/action/auth';
 
 import './style.scss';
 
@@ -42,7 +42,7 @@ class Header extends React.Component {
     requestLogin(formToAPi(data))
       .then(({ data }) => {
         console.log({ data });
-        this.props.dispatchSetUsersFunction(data);
+        this.props.dispatchSignInUserFunction(data);
       })
       .catch(error => {
         console.log({ error });
@@ -62,6 +62,7 @@ class Header extends React.Component {
   }
 
   render() {
+    console.log('props', this.props);
     return (
       <div>
         <Navbar color="light" light expand="md">
@@ -87,7 +88,7 @@ class Header extends React.Component {
 }
 
 const mapDispatchToProps = {
-  dispatchSetUsersFunction: user => dispatchSetUsers(user),
+  dispatchSignInUserFunction: user => dispatchSignInUser(user),
 };
 
 const mapStateToProps = state => ({
