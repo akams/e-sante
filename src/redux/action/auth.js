@@ -1,27 +1,46 @@
 import axios from 'axios';
 import ENV from '../../constants/environment/environment';
+import getHeaders from '../../constants/HeadersApi';
 
-import { SIGNIN_USER, SIGNIN_USER_SUCCESS, SIGNIN_USER_FAILURE } from '../reducers/auth/auth';
+import {
+  SIGNIN_USER,
+  SIGNIN_USER_SUCCESS,
+  SIGNIN_USER_FAILURE,
+  ME_FROM_TOKEN_SUCCESS,
+  ME_FROM_TOKEN_FAILURE,
+} from '../reducers/auth/auth';
 const RESOURCE = '/users';
 
 const requestSignIn = payload => axios.post(ENV.apiUrl + `${RESOURCE}/login`, payload);
+const requestMeFromToken = () => axios.get(ENV.apiUrl + `${RESOURCE}/me/from/token`);
 
 function signInUser() {
   return {
     type: SIGNIN_USER,
   };
 }
-
 function signInUserSuccess(user) {
   return {
     type: SIGNIN_USER_SUCCESS,
     payload: user,
   };
 }
-
 function signInUserFailure(error) {
   return {
     type: SIGNIN_USER_FAILURE,
+    payload: error,
+  };
+}
+
+function meFromTokenSuccess(currentUser) {
+  return {
+    type: ME_FROM_TOKEN_SUCCESS,
+    payload: currentUser,
+  };
+}
+function meFromTokenFailure(error) {
+  return {
+    type: ME_FROM_TOKEN_FAILURE,
     payload: error,
   };
 }
@@ -38,6 +57,10 @@ export function dispatchSignInUser(values) {
         //let other components know that everything is fine by updating the redux` state
         console.warn('state before: ', getState());
         dispatch(signInUserSuccess(result.data)); //ps: this is same as dispatching RESET_USER_FIELDS
+        axios.defaults.headers = {
+          ...axios.defaults.headers,
+          ...getHeaders(result.data.token),
+        };
         console.warn('state after: ', getState());
       })
       .catch(error => {
@@ -49,4 +72,20 @@ export function dispatchSignInUser(values) {
   };
 }
 
-export function dispatchMeFromToken() {}
+export function dispatchMeFromToken() {
+  return (dispatch, getState) => {
+    requestMeFromToken()
+      .then(response => {
+        sessionStorage.setItem('jwtToken', response.data.token);
+        console.warn('state before: ', getState());
+        dispatch(meFromTokenSuccess(response.data));
+        console.warn('state after: ', getState());
+      })
+      .catch(error => {
+        sessionStorage.removeItem('jwtToken'); //remove token from storage
+        console.warn('state before: ', getState());
+        dispatch(meFromTokenFailure(error));
+        console.warn('state after: ', getState());
+      });
+  };
+}

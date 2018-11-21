@@ -1,10 +1,12 @@
 import React from 'react';
+import axios from 'axios';
 import { connect } from 'react-redux';
 import { Switch, Route, withRouter } from 'react-router-dom';
 import HomeRoute from './HomeRoute';
 import PrivateRoute from './PrivateRoute';
 import UserRoute from './UserRoute';
 
+import getHeaders from '../../constants/HeadersApi';
 import { dispatchMeFromToken } from '../../redux/action/auth';
 
 import './style/style.scss';
@@ -16,7 +18,7 @@ class Main extends React.Component {
   }
 
   componentWillMount() {
-    // console.log('this.props.auth', this.props.auth);
+    this.loadUserFromToken();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -29,6 +31,7 @@ class Main extends React.Component {
         this.loadUserFromToken();
       }
     }
+    this.loadUserFromToken();
   }
 
   loadUserFromToken() {
@@ -37,7 +40,11 @@ class Main extends React.Component {
       //if there is no token, dont bother
       return;
     }
-    this.props.dispatchMeFromTokenFunction(token);
+    axios.defaults.headers = {
+      ...axios.defaults.headers,
+      ...getHeaders(token),
+    };
+    this.props.dispatchMeFromTokenFunction();
   }
 
   render() {

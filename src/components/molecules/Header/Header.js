@@ -33,14 +33,17 @@ class Header extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    const { modal } = this.state;
     if (nextProps.auth.status === 'authenticated' && nextProps.auth.user && !nextProps.auth.error) {
-      this.setState({
-        modal: false,
-      });
-      return this.props.history.push({
-        pathname: '/user',
-        state: {},
-      });
+      if (modal) {
+        this.setState({
+          modal: false,
+        });
+        return this.props.history.push({
+          pathname: '/user',
+          state: {},
+        });
+      }
     }
     //error
     //Throw error if it was not already thrown (check this.props.user.error to see if alert was already shown)
