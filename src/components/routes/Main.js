@@ -23,8 +23,6 @@ class Main extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.auth.status === 'authenticated' || this.props.auth.status === 'authenticated') {
-      console.log('this.props.auth', this.props.auth);
-      console.log('nextProps.auth', nextProps.auth);
       if (this.props.auth.accessToken || nextProps.auth.accessToken) {
         return;
       } else {
