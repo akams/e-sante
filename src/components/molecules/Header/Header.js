@@ -1,5 +1,4 @@
 import React from 'react';
-import axios from 'axios';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, Button } from 'reactstrap';
@@ -7,16 +6,12 @@ import { Link } from 'react-router-dom';
 
 import { renderModal } from './Modal';
 import { createInitFormData } from '../../../redux/form/helpers';
-import ENV from '../../../constants/environment/environment';
 import { dispatchSignInUser } from '../../../redux/action/auth';
 
 import './style.scss';
 
 const formName = 'header';
-const RESOURCE = '/users';
 export const initFormData = createInitFormData(formName);
-
-const requestLogin = payload => axios.post(ENV.apiUrl + `${RESOURCE}/login`, payload);
 
 const formToAPi = data => {
   return {
@@ -37,21 +32,31 @@ class Header extends React.Component {
     this.onValidate = this.onValidate.bind(this);
   }
 
-  async onValidate(data) {
-    requestLogin(formToAPi(data))
-      .then(({ data }) => {
-        this.props.dispatchSignInUserFunction(data);
-        this.setState({
-          modal: false,
-        });
-        return this.props.history.push({
-          pathname: '/user',
-          state: {},
-        });
-      })
-      .catch(error => {
-        console.log({ error });
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.auth.status === 'authenticated' && nextProps.auth.user && !nextProps.auth.error) {
+      this.setState({
+        modal: false,
       });
+      return this.props.history.push({
+        pathname: '/user',
+        state: {},
+      });
+    }
+    //error
+    //Throw error if it was not already thrown (check this.props.user.error to see if alert was already shown)
+    //If u dont check this.props.user.error, u may throw error multiple times due to redux-form's validation errors
+    if (
+      nextProps.auth.status === 'signin' &&
+      !nextProps.auth.user &&
+      nextProps.auth.error &&
+      !this.props.auth.error
+    ) {
+      alert(nextProps.auth.error.error);
+    }
+  }
+
+  async onValidate(data) {
+    this.props.dispatchSignInUserFunction(formToAPi(data));
   }
 
   toggle() {
@@ -71,7 +76,8 @@ class Header extends React.Component {
     return (
       <div>
         <Navbar color="light" light expand="md">
-          <NavbarBrand href="/">reactstrap</NavbarBrand>
+          {/* <NavbarBrand href="/">reactstrap</NavbarBrand> */}
+          <Link to="/">reactstrap</Link>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>

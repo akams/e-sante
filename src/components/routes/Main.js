@@ -4,12 +4,40 @@ import { Switch, Route, withRouter } from 'react-router-dom';
 import HomeRoute from './HomeRoute';
 import PrivateRoute from './PrivateRoute';
 import UserRoute from './UserRoute';
+
+import { dispatchMeFromToken } from '../../redux/action/auth';
+
 import './style/style.scss';
 
 class Main extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
+  }
+
+  componentWillMount() {
+    // console.log('this.props.auth', this.props.auth);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.auth.status === 'authenticated' || this.props.auth.status === 'authenticated') {
+      console.log('this.props.auth', this.props.auth);
+      console.log('nextProps.auth', nextProps.auth);
+      if (this.props.auth.accessToken || nextProps.auth.accessToken) {
+        return;
+      } else {
+        this.loadUserFromToken();
+      }
+    }
+  }
+
+  loadUserFromToken() {
+    let token = sessionStorage.getItem('jwtToken');
+    if (!token || token === '') {
+      //if there is no token, dont bother
+      return;
+    }
+    this.props.dispatchMeFromTokenFunction(token);
   }
 
   render() {
@@ -26,4 +54,13 @@ const mapStateToProps = state => ({
   auth: state.auth,
 });
 
-export default withRouter(connect(mapStateToProps)(Main));
+const mapDispatchToProps = {
+  dispatchMeFromTokenFunction: tokenFromStorage => dispatchMeFromToken(tokenFromStorage),
+};
+
+export default withRouter(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(Main)
+);

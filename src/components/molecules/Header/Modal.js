@@ -13,7 +13,7 @@ export const renderModal = (
     <Modal isOpen={modal} toggle={toggleModalFunction}>
       <ModalHeader toggle={toggleModalFunction}>Connexion</ModalHeader>
       <ModalBody>
-        <Form>
+        <Form onSubmit={handleSubmitFunction(onValidateFunction)}>
           <FormGroup>
             <Field
               name="username"
@@ -38,7 +38,7 @@ export const renderModal = (
               <Input type="checkbox" /> Check me out
             </Label>
           </FormGroup>
-          <Button onClick={handleSubmitFunction(onValidateFunction)}>Submit</Button>
+          <Button>Submit</Button>
         </Form>
       </ModalBody>
     </Modal>
