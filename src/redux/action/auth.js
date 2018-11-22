@@ -8,11 +8,13 @@ import {
   SIGNIN_USER_FAILURE,
   ME_FROM_TOKEN_SUCCESS,
   ME_FROM_TOKEN_FAILURE,
+  LOGOUT_USER,
 } from '../reducers/auth/auth';
 const RESOURCE = '/users';
 
 const requestSignIn = payload => axios.post(ENV.apiUrl + `${RESOURCE}/login`, payload);
 const requestMeFromToken = () => axios.get(ENV.apiUrl + `${RESOURCE}/me/from/token`);
+const requestLogout = () => axios.get(ENV.apiUrl + `${RESOURCE}/logout`);
 
 function signInUser() {
   return {
@@ -42,6 +44,12 @@ function meFromTokenFailure(error) {
   return {
     type: ME_FROM_TOKEN_FAILURE,
     payload: error,
+  };
+}
+
+function logoutUser() {
+  return {
+    type: LOGOUT_USER,
   };
 }
 
@@ -87,5 +95,17 @@ export function dispatchMeFromToken() {
         dispatch(meFromTokenFailure(error));
         console.warn('state after: ', getState());
       });
+  };
+}
+
+export function dispatchLogOutUser() {
+  return (dispatch, getState) => {
+    console.warn('state before: ', getState());
+    requestLogout().then(() => {
+      sessionStorage.removeItem('jwtToken');
+      console.warn('state before: ', getState());
+      dispatch(logoutUser());
+      console.warn('state after: ', getState());
+    });
   };
 }

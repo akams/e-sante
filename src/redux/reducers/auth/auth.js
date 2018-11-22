@@ -9,6 +9,9 @@ export const SIGNIN_USER_FAILURE = 'SIGNIN_USER_FAILURE';
 export const ME_FROM_TOKEN_SUCCESS = 'ME_FROM_TOKEN_SUCCESS';
 export const ME_FROM_TOKEN_FAILURE = 'ME_FROM_TOKEN_FAILURE';
 
+//log out user
+export const LOGOUT_USER = 'LOGOUT_USER';
+
 const initialState = {
   user: null,
   status: null,
@@ -70,6 +73,15 @@ export default (state = initialState, action) => {
         user: null,
         status: 'storage',
         error: error,
+        loading: false,
+        isAuthenticated: false,
+      };
+    case LOGOUT_USER:
+      return {
+        ...state,
+        user: null,
+        status: 'logout',
+        error: null,
         loading: false,
         isAuthenticated: false,
       };

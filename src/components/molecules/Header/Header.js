@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 import { renderModal } from './Modal';
 import { createInitFormData } from '../../../redux/form/helpers';
-import { dispatchSignInUser } from '../../../redux/action/auth';
+import { dispatchSignInUser, dispatchLogOutUser } from '../../../redux/action/auth';
 
 import './style.scss';
 
@@ -30,6 +30,7 @@ class Header extends React.Component {
     this.toggle = this.toggle.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
     this.onValidate = this.onValidate.bind(this);
+    this.logout = this.logout.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -60,6 +61,10 @@ class Header extends React.Component {
 
   async onValidate(data) {
     this.props.dispatchSignInUserFunction(formToAPi(data));
+  }
+
+  logout() {
+    this.props.dispatchLogOutUserFunction();
   }
 
   toggle() {
@@ -94,7 +99,7 @@ class Header extends React.Component {
                   Connexion
                 </Button>
               ) : (
-                <Button outline color="primary" onClick={this.toggleModal}>
+                <Button outline color="primary" onClick={this.logout}>
                   Déconnexion
                 </Button>
               )}
@@ -109,6 +114,7 @@ class Header extends React.Component {
 
 const mapDispatchToProps = {
   dispatchSignInUserFunction: user => dispatchSignInUser(user),
+  dispatchLogOutUserFunction: () => dispatchLogOutUser(),
 };
 
 const mapStateToProps = state => ({
